@@ -102,3 +102,11 @@ void goat_source_register(void)
 {
     obs_register_source(&goat_source_info);
 }
+
+OBS_DECLARE_MODULE()
+
+bool obs_module_load(void)
+{
+    goat_source_register();
+    return true;
+}
