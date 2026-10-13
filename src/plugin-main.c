@@ -1,34 +1,103 @@
-/*
-Plugin Name
-Copyright (C) <Year> <Developer> <Email Address>
+#include "goat-source.h"
+#include <util/platform.h>
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+struct goat_state {
+    float duration;
+    float elapsed;
+};
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program. If not, see <https://www.gnu.org/licenses/>
-*/
-
-#include <obs-module.h>
-#include <plugin-support.h>
-
-OBS_DECLARE_MODULE()
-OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
-
-bool obs_module_load(void)
+static const char *goat_get_name(void *unused)
 {
-	obs_log(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
-	return true;
+    UNUSED_PARAMETER(unused);
+    return "GOAT.exe — тестовый источник";
 }
 
-void obs_module_unload(void)
+static void *goat_create(obs_data_t *settings, obs_source_t *source)
 {
-	obs_log(LOG_INFO, "plugin unloaded");
+    UNUSED_PARAMETER(source);
+    struct goat_state *state = bzalloc(sizeof(*state));
+    state->duration = (float)obs_data_get_double(settings, "duration");
+    if (state->duration < 1.0f)
+        state->duration = 5.0f;
+    state->elapsed = 0.0f;
+    return state;
+}
+
+static void goat_destroy(void *data)
+{
+    bfree(data);
+}
+
+static void goat_update(void *data, obs_data_t *settings)
+{
+    struct goat_state *state = data;
+    if (!state)
+        return;
+
+    state->duration = (float)obs_data_get_double(settings, "duration");
+    if (state->duration < 1.0f)
+        state->duration = 5.0f;
+}
+
+static void goat_defaults(obs_data_t *settings)
+{
+    obs_data_set_default_double(settings, "duration", 5.0);
+}
+
+static obs_properties_t *goat_properties(void *data)
+{
+    UNUSED_PARAMETER(data);
+    obs_properties_t *props = obs_properties_create();
+    obs_properties_add_float_slider(props, "duration",
+                                    "Длительность тестового события (сек.)",
+                                    1.0, 30.0, 1.0);
+    return props;
+}
+
+static uint32_t goat_width(void *data)
+{
+    UNUSED_PARAMETER(data);
+    return 512;
+}
+
+static uint32_t goat_height(void *data)
+{
+    UNUSED_PARAMETER(data);
+    return 512;
+}
+
+static void goat_tick(void *data, float seconds)
+{
+    struct goat_state *state = data;
+    if (!state)
+        return;
+    state->elapsed += seconds;
+}
+
+/* Rendering and Twitch command handling are intentionally the next stage. */
+static void goat_render(void *data, gs_effect_t *effect)
+{
+    UNUSED_PARAMETER(data);
+    UNUSED_PARAMETER(effect);
+}
+
+static struct obs_source_info goat_source_info = {
+    .id = "goat_exe_pet_source",
+    .type = OBS_SOURCE_TYPE_INPUT,
+    .output_flags = OBS_SOURCE_VIDEO,
+    .get_name = goat_get_name,
+    .create = goat_create,
+    .destroy = goat_destroy,
+    .update = goat_update,
+    .get_defaults = goat_defaults,
+    .get_properties = goat_properties,
+    .get_width = goat_width,
+    .get_height = goat_height,
+    .video_tick = goat_tick,
+    .video_render = goat_render,
+};
+
+void goat_source_register(void)
+{
+    obs_register_source(&goat_source_info);
 }
