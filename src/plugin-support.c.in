@@ -1,5 +1,5 @@
 #include <obs-module.h>
-#include "goat-source.h"
+#include <plugin-support.h>
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE("goat-exe-obs", "ru-RU")
