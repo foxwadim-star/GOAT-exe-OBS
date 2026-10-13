@@ -1,3 +1,4 @@
+#include <obs-module.h>
 #include "goat-source.h"
 #include <util/platform.h>
 
