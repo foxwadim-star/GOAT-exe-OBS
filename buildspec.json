@@ -36,10 +36,10 @@
             "bundleId": "com.example.plugintemplate-for-obs"
         }
     },
-    "name": "plugintemplate-for-obs",
-    "displayName": "Plugin Template for OBS",
+    "name": "goat-exe",
+    "displayName": "GOAT.exe",
     "version": "1.0.0",
-    "author": "Your Name Here",
-    "website": "https://example.com",
-    "email": "me@example.com"
+    "author": "GOAT.exe",
+    "website": "https://github.com/foxwadim-star/GOAT-exe-OBS",
+    "email": ""
 }
